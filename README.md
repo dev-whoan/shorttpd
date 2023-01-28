@@ -3,6 +3,9 @@ Simple Http Web Server For Serving Static Files
 
 ## Latest Version: 0.0.1
 
+## Demo
+<img width="1600" alt="Demo Preview" src="https://user-images.githubusercontent.com/65178775/215252787-e6b80509-be23-4796-8cc8-f1ecdc5d9ea5.gif">
+
 # Usage
 ## Customize HTML
 - You can Customize Shorttpd's Design
