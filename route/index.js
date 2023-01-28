@@ -67,15 +67,16 @@ const createHtmlElement = (item) => {
 };
 router.use('/*', async (req, res, next) => {
     let targeturl = urlencoder.decode(req.originalUrl);
-    let _oneMover = urlencoder.encode(targeturl);
-    let _requestedPath = _oneMover;
 
-    if(targeturl !== req.originalUrl){
-        _requestedPath = targeturl;
+    // 디코딩 후, 기존과 다르면 encode 된 것임
+    if(targeturl === req.originalUrl){
+        targeturl = req.originalUrl;
     }
 
-    const extOfFile = path.extname(_requestedPath);
-    const targetPath = req.originalUrl !== '/' ? path.join(currentPath, _requestedPath) : currentPath;
+    console.log(targeturl)
+
+    const extOfFile = path.extname(targeturl);
+    const targetPath = req.originalUrl !== '/' ? path.join(currentPath, targeturl) : currentPath;
     if(extOfFile ==='.html'){
         return res.render(targetPath);
     }
