@@ -12,6 +12,7 @@ const router = express.Router();
  * Config Reader
  */
 const configReader = new ShorttpdConfig();
+const webViewExtensions = configReader.config.data.http.web_view_extension.split(',');
 
 /** Variables
  * File Reader
@@ -125,15 +126,11 @@ router.use('/*', async (req, res, next) => {
                 return res.status(500).json({code: 200, message: "Unable to scan directory..."});
             }
         }
+
+        if(webViewExtensions.indexOf(extOfFile.split('.')[1]) !== -1){
+            return res.sendFile(targetPath);
+        }
         
-        /*
-        res.pipe(filedata);
-        filedata.on('finish', () => {
-            const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-            console.log(`[[Download ${ip}]]->targetPath`);
-            filedata.close();
-        });
-        */
         return res.download(targetPath);
         //return res.sendFile(targetPath); -> Open File in Browser
     } catch (e) {

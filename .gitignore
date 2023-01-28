@@ -1,10 +1,6 @@
-# mapi configs
-configs/
-configs/**
-
-files/
-files/**
-
+# shorttpd serve
+serve/
+serve/**
 # Logs
 .DS_Store
 logs
