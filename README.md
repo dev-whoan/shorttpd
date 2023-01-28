@@ -1,7 +1,7 @@
 # shorttpd
 Simple Http Web Server For Serving Static Files
 
-## Latest Version: 0.0.1
+## Latest Version: 0.0.2
 
 ## Demo
 <img width="1600" alt="Demo Preview" src="https://user-images.githubusercontent.com/65178775/215252787-e6b80509-be23-4796-8cc8-f1ecdc5d9ea5.gif">
@@ -31,4 +31,4 @@ web_view_extension=txt,json,conf,ini,png,jpeg,jpg,gif
 
 - Mount your directory for serving into /app/serve.
 
-`docker run --rm -p 3080:3080 -v /shorttpd/serve:/app/serve --name shorttpd devwhoan/shorttpd:0.0.1`
+`docker run --rm -p 3080:3080 -v /shorttpd/serve:/app/serve --name shorttpd devwhoan/shorttpd:0.0.2`
