@@ -4,6 +4,9 @@ Simple Http Web Server For Serving Static Files
 ## Latest Version: 0.0.1
 
 # Usage
+## Customize HTML
+- You can Customize Shorttpd's Design
+
 ## Docker
 - Set shorttpd.conf * Please do not change section such that [addresses], [auth], [http] ...
 ```
