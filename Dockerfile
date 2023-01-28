@@ -15,5 +15,4 @@ RUN npm ci --only=production
 
 COPY . /app
 
-EXPOSE 3000
 CMD [ "node", "starter.js" ]
