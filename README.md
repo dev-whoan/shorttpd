@@ -25,4 +25,4 @@ web_view_extension=txt,json,conf,ini,png,jpeg,jpg,gif
 
 - Mount your directory for serving into /app/serve.
 
-`docker run --rm -p 3080:3080 -v /shorttpd/serve:/app/erve --name shorttpd devwhoan/shorttpd:0.0.1`
+`docker run --rm -p 3080:3080 -v /shorttpd/serve:/app/serve --name shorttpd devwhoan/shorttpd:0.0.1`
