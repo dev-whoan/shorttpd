@@ -32,6 +32,8 @@ const STATIC_BODY_HTML = Buffer.from(fs.readFileSync(staticBodyHTML)).toString('
  * Authorization
  */
 router.use('/*', (req, res, next) => {
+    const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+    console.log(`[[Connect - ${ip}]]:: ${req.originalUrl} ${new Date().toLocaleString()}`);
     if(configReader.config.data.auth.use_auth === 'yes'){
         if(!req.headers.authorization){
             return res.status(401).json({
