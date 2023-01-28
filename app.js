@@ -16,6 +16,8 @@ app.use(express.json());
 app.set('view engine', 'ejs');
 app.engine('html', ejs.renderFile);
 app.use('/shorttpd-static', express.static(path.join(__dirname, 'html')));
+app.get("/favicon.ico", (req, res) => res.status(204).end());
+app.use('/favicon.ico', express.static('./img/favicon.ico'));
 
 app.use('/', defaultRouter);
 

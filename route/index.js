@@ -37,6 +37,7 @@ router.use('/*', (req, res, next) => {
     console.log(`[[Connect - ${ip}]]:: ${req.originalUrl} ${new Date().toLocaleString()}`);
     if(configReader.config.data.auth.use_auth === 'yes'){
         if(!req.headers.authorization){
+            console.log(`\t\tUnauthorized******`);
             return res.status(401).json({
                 code: 401,
                 message: "Unauthorized"
@@ -73,26 +74,28 @@ router.use('/*', async (req, res, next) => {
         targeturl = req.originalUrl;
     }
 
-    console.log(targeturl)
+    targeturl = targeturl.split(/\ /).join('\ ');
 
     const extOfFile = path.extname(targeturl);
     const targetPath = req.originalUrl !== '/' ? path.join(currentPath, targeturl) : currentPath;
+    const requestPath = targetPath;
+    console.log('serve to:', requestPath);
     if(extOfFile ==='.html'){
-        return res.render(targetPath);
+        return res.render(requestPath);
     }
 
     try{
-        const isDir = fs.lstatSync(targetPath).isDirectory();
+        const isDir = fs.lstatSync(requestPath).isDirectory();
         if(isDir){
             try{
-                const read = fs.readdirSync(targetPath, {withFileTypes: true });
+                const read = fs.readdirSync(requestPath, { withFileTypes: true });
                 const dirs = [];
                 const files = [];
                 
                 read.forEach((file, index) => {
                     const fDir = file.isDirectory();
                     const fName = file.name;
-                    const fPath = path.join(targetPath, fName);
+                    const fPath = path.join(requestPath, fName);
                     
                     if(!fDir){
                         const fStat = fs.statSync(fPath);
@@ -140,12 +143,15 @@ router.use('/*', async (req, res, next) => {
         }
 
         if(webViewExtensions.indexOf(extOfFile.split('.')[1]) !== -1){
-            return res.sendFile(targetPath);
+            return res.sendFile(requestPath);
         }
         
-        return res.download(targetPath);
-        //return res.sendFile(targetPath); -> Open File in Browser
+        return res.download(requestPath);
+        //return res.sendFile(requestPath); -> Open File in Browser
     } catch (e) {
+        if(e.message.includes("favicon")){
+            return;
+        }
         if(e.message.includes('no such file')){
             return res.render(static404);
         }
