@@ -3,6 +3,7 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import ShorttpdConfig from '../util/confReader.js';
+import urlencoder from 'urlencode';
 
 /** Variables
  * Router
@@ -65,8 +66,16 @@ const createHtmlElement = (item) => {
     return string;
 };
 router.use('/*', async (req, res, next) => {
-    const extOfFile = path.extname(req.originalUrl);
-    const targetPath = req.originalUrl !== '/' ? path.join(currentPath, req.originalUrl) : currentPath;
+    let targeturl = urlencoder.decode(req.originalUrl);
+    let _oneMover = urlencoder.encode(targeturl);
+    let _requestedPath = _oneMover;
+
+    if(targeturl !== req.originalUrl){
+        _requestedPath = targeturl;
+    }
+
+    const extOfFile = path.extname(_requestedPath);
+    const targetPath = req.originalUrl !== '/' ? path.join(currentPath, _requestedPath) : currentPath;
     if(extOfFile ==='.html'){
         return res.render(targetPath);
     }
