@@ -11,6 +11,7 @@ import { authorize } from './auth/auth.js';
  * Router
  */
 const router = express.Router();
+
 /** Variables
  * Config Reader
  */
@@ -24,12 +25,12 @@ const cookieName = configReader.config.data.http.web_cookie_name;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const currentPath = path.join(__dirname, '..', 'serve');
-const staticHtmlPath = path.join(__dirname, '..', 'html');
+const staticHtmlPath = path.join(__dirname, '..', 'html', 'public');
 
-const staticUnitedHTML = path.join(staticHtmlPath, 'unite.html');
-const static404 = path.join(staticHtmlPath, 'unite_404.html');
-const static401 = path.join(staticHtmlPath, 'unite_401.html');
-const staticBodyHTML = path.join(staticHtmlPath, 'body.html');
+const staticUnitedHTML = path.join(staticHtmlPath, 'view', 'unite.html');
+const static404 = path.join(staticHtmlPath, 'view', 'unite_404.html');
+const static401 = path.join(staticHtmlPath, 'view', 'unite_401.html');
+const staticBodyHTML = path.join(staticHtmlPath, 'fragment', 'body.html');
 const STATIC_UNITE_HTML = Buffer.from(fs.readFileSync(staticUnitedHTML)).toString('utf-8');
 const STATIC_BODY_HTML = Buffer.from(fs.readFileSync(staticBodyHTML)).toString('utf-8');
 
@@ -39,23 +40,11 @@ router.use('/*', async (req, res, next) => {
     console.log(`[[Connect - ${ip}]]:: ${req.originalUrl} ${new Date().toLocaleString()}`);
     if(configReader.config.data.auth.use_auth === 'yes'){
         if(!req.headers.cookie){
-            /*
-            return res.status(401).json({
-                code: 401,
-                message: "Unauthorized"
-            })
-            */
             return res.render(static401);
         }
         try{
             const authValue = req.headers.cookie.split(`${cookieName}=`)[1];
             if(!authValue){
-                /*
-                return res.status(401).json({
-                    code: 401,
-                    message: "Unauthorized"
-                })
-                */
                 return res.render(static401);
             }
             
@@ -64,21 +53,9 @@ router.use('/*', async (req, res, next) => {
     
             const authResult = await authorize(userName, userPw);
             if(!authResult){
-                /*
-                return res.status(401).json({
-                    code: 401,
-                    message: "Unauthorized"
-                })
-                */
                 return res.render(static401);
             }
         } catch (e){
-            /*
-            return res.status(401).json({
-                code: 401,
-                message: "Unauthorized"
-            })
-            */
             return res.render(static401);
         }
         /* Add more authorization */
@@ -92,9 +69,9 @@ router.use('/*', async (req, res, next) => {
 const createHtmlElement = (item) => {
     let string = '<div class="one-file">'
     if(item.dir)
-        string += `<img class="file-type-icon" src="/shorttpd-static/img/dir.png"/>`
+        string += `<img class="file-type-icon" src="/img/dir.png"/>`
     else
-        string += `<img class="file-type-icon" src="/shorttpd-static/img/file.png"/>`
+        string += `<img class="file-type-icon" src="/img/file.png"/>`
 
     string += `<p class="file-name">${item.name}</p>`
     string += `<p class="file-size">${item.size}</p>`
@@ -140,7 +117,7 @@ router.use('/*', async (req, res, next) => {
                             name: fName,
                             dir: false,
                             size: fStat.size,
-                            lastModified: fStat.mtime
+                            lastModified: new Date(fStat.mtime).toLocaleString()
                         });
                         return false;
                     }
@@ -170,7 +147,7 @@ router.use('/*', async (req, res, next) => {
                 });
                 
                 const body = STATIC_BODY_HTML.replace('${{ BODY_FILES_HERE }}', elementString);
-                const list = STATIC_UNITE_HTML.replace('<div data-include="/shorttpd-static/body.html"></div>', body);
+                const list = STATIC_UNITE_HTML.replace('<div data-include="/shorttpd-static/fragment/body.html"></div>', body);
     
                 return res.send(list);
             } catch (e) {

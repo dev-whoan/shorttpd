@@ -23,6 +23,13 @@
             line-height: 40px;
             height: 40px;
             width: calc(100% - 10px);
+
+            cursor: pointer;
+            transition: color 0.3s ease-in-out;
+        }
+
+        header h1:hover{
+            color: #5252ff;
         }
 
         header #logout{
@@ -37,7 +44,7 @@
 
     </style>
     <header>
-        <h1>Shorttpd, Simple Web Server Serving Static Files</h1>
+        <h1 onclick="location.href = '/';">Shorttpd, Simple Web Server Serving Static Files</h1>
         <span id="logout" onclick="logout()">Logout</span>
     </header>
 </body>

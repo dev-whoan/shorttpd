@@ -68,13 +68,11 @@ function goLogin(){
         },
         'Fail to login',
         function(result){
-            console.log("login result", result)
             if(result.code === 200){
                 const cookieData = `${idValue}:${hash}`;
                 document.cookie = createCookie(cookieData);
                 location.href = '/';
-            } else {
-                alert("Fail to login!");
+                return;
             }
         }
     );
@@ -128,7 +126,7 @@ function httpRequest(method, url, body, errorMsg, callback) {
 
     function processRequest() {
         if (http.readyState === 4) {
-            if (http.status === 200 || http.status === 204) {
+            if (http.status >= 200 && http.status < 400) {
                 try {
                     callback(JSON.parse(http.responseText));
                 } catch (e) {
@@ -136,10 +134,200 @@ function httpRequest(method, url, body, errorMsg, callback) {
                 }
             } else {
                 if(http.status === 401){
-                    alert("Fail to login!")
+                    alert("Fail to login!");
+                    callback(JSON.parse(http.responseText));
                 }
                 console.error(http.status);
             }
         }
     }
+}
+
+function drawUserList(_key){
+    const parent = document.getElementById('user-list-table');
+
+    if(!parent){
+        return;
+    }
+
+    parent.innerHTML = "";
+
+    let baseTr = document.createElement('tr');
+    baseTr.id = 'table-header';
+    
+    let baseTd1 = document.createElement('td');
+    baseTd1.innerText = 'User Id';
+    let baseTd2 = document.createElement('td');
+    baseTd2.innerText = 'Permissions';
+
+    baseTr.append(baseTd1, baseTd2);
+    parent.append(baseTr);
+
+    httpRequest(
+        'POST',
+        '/manage/users',
+        {
+            key: _key
+        },
+        'Fail to get users',
+        function(result){
+            if(result.code === 401){
+                location.href = '/';
+                return;
+            }
+
+            if(result.code === 200){
+                const users = result.data;
+
+                users.data.forEach((user, index) => {
+                    let oneTr = document.createElement('tr');
+                    oneTr.classList.add('one-user');
+                    
+                    let id = user.name;
+                    let perm = user.perm;
+
+                    let idTd = document.createElement('td');
+                    idTd.innerText = id;
+                    let permTd = document.createElement('td');
+                    permTd.innerText = perm;
+
+                    oneTr.append(idTd, permTd);
+                    parent.append(oneTr);
+                });
+            }
+        }
+    );
+}
+
+function showUserAddPopup(){
+    const target = document.getElementById('user-add-popup');
+    if(!target){
+        return;
+    }
+
+    target.style.display = 'block';
+}
+
+function registerUser(){
+    const parent = document.getElementById('user-add-popup');
+    if(!parent){
+        return;
+    }
+
+    const id = parent.querySelector('#id-value').value;
+    const pw = sha256(parent.querySelector('#pw-value').value);
+    const prompt = document.getElementById('prompt');
+    const promptOk = prompt.querySelector('#btn-ok');
+    const promptNo = prompt.querySelector('#btn-no');
+
+    prompt.style.display = 'block';
+    promptNo.onclick = () => {
+        prompt.style.display = 'none';
+    };
+    promptOk.onclick = () => {
+        const key = prompt.querySelector('#key-value');
+        const _key = key.value;
+        httpRequest(
+            'POST',
+            '/manage/register',
+            {
+                id: id,
+                pw: pw,
+                key: _key
+            },
+            'Fail to get users',
+            function(result){
+                if(result.code === 409){
+                    alert("User Already Exist!")
+                    return;
+                }
+
+                if(result.code === 201){
+                    alert("User Created");
+                    closeUserAddPopup();
+
+                    drawUserList(_key);
+                    return;
+                }
+
+                console.error("Unknown error: ", result);
+            }
+        );
+        key.value = '';
+        prompt.style.display = 'none';
+    };
+}
+
+function closeUserAddPopup(){
+    const target = document.getElementById('user-add-popup');
+    if(!target){
+        return;
+    }
+
+    target.style.display = 'none';
+}
+
+function showUserRemovePopup(){
+    const target = document.getElementById('user-remove-popup');
+    if(!target){
+        return;
+    }
+
+    target.style.display = 'block';
+}
+
+function deleteUser(){
+    const parent = document.getElementById('user-remove-popup');
+    if(!parent){
+        return;
+    }
+
+    const id = parent.querySelector('#id-remove').value;
+    const prompt = document.getElementById('prompt');
+    const promptOk = prompt.querySelector('#btn-ok');
+    const promptNo = prompt.querySelector('#btn-no');
+
+    prompt.style.display = 'block';
+    promptNo.onclick = () => {
+        prompt.style.display = 'none';
+    };
+    promptOk.onclick = () => {
+        const key = prompt.querySelector('#key-value');
+        const _key = key.value;
+        httpRequest(
+            'POST',
+            '/manage/unregister',
+            {
+                id: id,
+                key: _key
+            },
+            'Fail to get users',
+            function(result){
+                if(result.code === 409){
+                    alert("User Already Exist!")
+                    return;
+                }
+    
+                if(result.code === 201 || result.code === 200){
+                    alert("User Removed");
+                    closeUserAddPopup();
+                    drawUserList(_key);
+                    return;
+                }
+    
+                console.error("Unknown error: ", result);
+            }
+        );
+        key.value = '';
+        prompt.style.display = 'none';
+    };
+}
+
+function closeUserRemovePopup(){
+    const target = document.getElementById('user-remove-popup');
+    if(!target){
+        return;
+    }
+
+    target.style.display = 'none';
 }

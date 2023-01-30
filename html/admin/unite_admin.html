@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+
+<html>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+<title>Shorttpd, Simple Web Server</title>
+<script src="/js/app.js"></script>
+<script src="/js/sha256.js"></script>
+<body>
+<div data-include="/shorttpd-static/fragment/header.html"></div>
+<style>
+section#admin-section{
+    height: 600px;
+    overflow-y: scroll;
+    position: relative;
+}
+
+div#prompt{
+    width: 300px;
+    height: 150px;
+    position: absolute;
+    left: 50%;
+    top: 130px;
+    box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+    transform: translateX(-50%);
+    background-color: white;
+    display: none;
+}
+
+div#prompt #label{
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin-top: 20px;
+}
+
+div#prompt #key-value{
+    width: calc(100% - 16.5px);
+    margin-left: 5px;
+}
+</style>
+<section id="admin-section">
+    <div data-include="/admin/admin_page.html"></div>    
+</section>
+
+<div id="prompt">
+    <p id="label">Please Enter Admin Key</p>
+    <input id="key-value" type="password" />
+
+    <div class="btn-wrapper">
+        <span id="btn-no" class="button" onclick="closePrompt();">Cancel</span>
+        <span id="btn-ok" class="button">Ok</span>
+    </div>  
+</div>
+<!-- Authorize -->
+<script>
+    const prompt = document.getElementById('prompt');
+    const promptOk = prompt.querySelector('#btn-ok');
+    const promptNo = prompt.querySelector('#btn-no');
+
+    if(!prompt){
+        alert('Redirect to home...')
+        location.href='/';
+    }
+
+    prompt.style.display = 'block';
+    promptNo.onclick = () => {
+        prompt.style.display = 'none';
+    };
+    promptOk.onclick = () => {
+        const key = prompt.querySelector('#key-value');
+        const _key = key.value;
+        httpRequest(
+            'POST',
+            '/manage/auth',
+            {
+                key: _key
+            },
+            'Fail to authenticate',
+            function(result){
+                if(result.code === 401){
+                    location.href='/';
+                    return;
+                }
+                setTimeout(() => {
+                    drawUserList(_key);
+                }, 1500);
+            }
+        );
+        key.value = '';
+        prompt.style.display = 'none';
+    };
+</script>
+<div data-include="/shorttpd-static/fragment/footer.html"></div>
+</body>
+
+</html>

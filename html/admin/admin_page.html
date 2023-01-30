@@ -1,0 +1,190 @@
+<!DOCTYPE HTML>
+
+<html>
+<body>
+<style>
+div#user-manage {
+    width: 70%;
+    height: auto;
+    overflow: hidden;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    padding: 10px;
+    margin-top: 50px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding-bottom: 20px;
+}
+div#user-manage div#btn-wrapper{
+    overflow: hidden;
+    position: absolute;
+    top: 7.5px;
+    right: 20px;
+    display: flex;
+    justify-content: space-evenly;
+
+    width: 170px;
+    height: 50px;
+}
+
+div#user-manage div#btn-wrapper .button{
+    width: 70px;
+    height: 40px;
+    line-height: 40px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    text-align:center;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+    cursor: pointer;
+}
+
+div#user-manage div#user-manage-header{
+    width: 100%;
+    height: 50px;
+    border-bottom: 1px solid black;
+}
+
+div#user-manage #title{
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    font-weight: 700;
+    font-size: 22px;
+}
+
+div#user-manage table{
+    margin-top: 20px;
+    width: 100%;
+    border: 3px double black;
+    text-align: center;
+}
+
+div#user-manage table #table-header{
+    border-bottom: 1px solid black;
+    height: 40px;
+    line-height: 40px;
+    font-weight: 700;
+    color: #333;
+}
+
+div#user-manage table .one-user{
+    border-bottom: 1px dashed #ccc;
+    height: 30px;
+    line-height: 30px;
+    color: #777;
+}
+
+div#user-manage table .one-user:hover{
+    background-color: rgb(196, 235, 255);
+}
+
+div#user-manage table .one-user:last-child{
+    border-bottom: none !important;
+}
+
+div#user-add-popup,
+div#user-remove-popup{
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    left: 50%;
+    top: 130px;
+    box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+    transform: translateX(-50%);
+    background-color: white;
+    display: none;
+}
+
+div#user-add-popup #id-label,
+div#user-remove-popup #id-label{
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin-top: 20px;
+}
+
+div#user-add-popup #pw-label{
+    width: calc(100% - 10px);
+    padding: 5px;
+    margin-top: 10px;
+}
+
+div#user-add-popup #id-value,
+div#user-add-popup #pw-value,
+div#user-remove-popup #id-remove{
+    margin-left: 5px;
+}
+
+div.btn-wrapper{
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: space-evenly;
+    height: 50px;
+    margin-top: 15px;
+}
+
+div.btn-wrapper .button{
+    width: 70px;
+    height: 40px;
+    line-height: 40px;
+
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+    text-align:center;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+    cursor: pointer;
+}
+
+#btn-login{
+    background-color: #b7fcd2
+}
+</style>
+<div id="user-manage">
+    <div id="user-manage-header">
+        <p id="title">User List</p>
+        <div id="btn-wrapper">
+            <span id="btn-remove-user" class="button" onclick="showUserRemovePopup();">Remove</span>
+            <span id="btn-add-user" class="button" onclick="showUserAddPopup();">Add</span>
+        </div>
+    </div>
+
+    <table id="user-list-table">
+        <!--
+        <tr id="table-header">
+            <th>User ID</th>
+            <th>Permissions</th>
+        </tr>
+        -->
+    </table>
+</div>
+
+<div id="user-add-popup">
+    <p id="id-label">ID</p>
+    <input id="id-value" type="text" />
+    <p id="pw-label">Password</p>
+    <input id="pw-value" type="password" />
+
+    <div class="btn-wrapper">
+        <span id="btn-cancel" class="button" onclick="closeUserAddPopup();">Cancel</span>
+        <span id="btn-login" class="button" onclick="registerUser();">Add</span>
+    </div>  
+</div>
+
+<div id="user-remove-popup">
+    <p id="id-label">ID</p>
+    <input id="id-remove" type="text" />
+
+    <div class="btn-wrapper">
+        <span id="btn-cancel" class="button" onclick="closeUserRemovePopup();">Cancel</span>
+        <span id="btn-login" class="button" onclick="deleteUser();">Remove</span>
+    </div>  
+</div>
+</body>
+
+</html>

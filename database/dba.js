@@ -72,13 +72,38 @@ export default class DBAcceesor {
         });
     }
 
+    async getUsers(){
+        return new Promise((resolve, reject) => {
+            this.db = new sqlite.Database(dbPath);
+
+            const db = this.db;
+            this.db.serialize( () => {
+                const stmt = db.prepare(`SELECT name, perm FROM ${AUTH_TABLE_NAME}`);
+                stmt.all([], function(err, user) {
+                    if(err){
+                        console.log("getUser Error:", err)
+                        reject(err);
+                    }
+
+                    return resolve({
+                        code: 200,
+                        data: user
+                    });
+                });
+
+                stmt.finalize();
+            });
+            this.db.close();
+        });
+    }
+
     async getUser(name){
         return new Promise((resolve, reject) => {
             this.db = new sqlite.Database(dbPath);
 
             const db = this.db;
             this.db.serialize( () => {
-                const stmt = db.prepare(`SELECT * FROM ${AUTH_TABLE_NAME} WHERE name = ?`);
+                const stmt = db.prepare(`SELECT name, perm FROM ${AUTH_TABLE_NAME} WHERE name = ?`);
                 stmt.all(name, function(err, user) {
                     if(err){
                         console.log("getUser Error:", err)
@@ -136,13 +161,13 @@ export default class DBAcceesor {
         });
     }
 
-    async delUser(name, password) {
+    async delUser(name) {
         return new Promise(async (resolve, reject) => {
             this.db = new sqlite.Database(dbPath);
             const db = this.db;
 
             this.db.serialize( () => {
-                const stmt = db.prepare(`DELETE FROM ${AUTH_TABLE_NAME} WHERE name = ? AND password = ?`, name, password);
+                const stmt = db.prepare(`DELETE FROM ${AUTH_TABLE_NAME} WHERE name = ?`, name);
                 stmt.run([], function(err){
                     if(err){
                         console.log(err);
@@ -167,51 +192,22 @@ export default class DBAcceesor {
 /*
 const dba = new DBAcceesor();
 try{
-    const users = await dba.getUser('devwhoan', 'hello');
-    console.log("users: ", users);
+    console.log(
+        await dba.getUsers()
+    )
+    
+    await dba.addUser('hello', 'abc');
+await dba.addUser('hello1', 'abc');
+await dba.addUser('hello2', 'abc');
+await dba.addUser('hello3', 'abc');
+await dba.addUser('hello4', 'abc');
+await dba.addUser('hello5', 'abc');
+await dba.addUser('hello6', 'abc');
+await dba.addUser('hello7', 'abc');
+await dba.addUser('hello8', 'abc');
+await dba.addUser('hello9', 'abc');
+await dba.addUser('hello10', 'abc');
+await dba.addUser('hello11', 'abc');
 
-    const register = await dba.addUser('devwhoan', '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824');    
-    console.log("add: ", register);
-
-    const authResult = await dba.authUser('devwhoan', 'hello');
-    console.log('auth: ', authResult);
-
-    const dels = await dba.delUser('devwhoan', 'hello');
-    console.log("del: ", dels);
-} catch(e) {
-    console.log("outside", e);
-}
+} catch (ignore) {}
 */
-
-// create table
-//db.run('CREATE TABLE student(id integer primary key, name text not null, email text unique)');
-
-//db.close();
-/*
-// insert
-db.run(`INSERT INTO student(name, email) VALUES('이종현', '1428ksu@gmail.com')`, function (err) {
-    if (err) {
-        return console.log(err.message);
-    }
-    // get the last insert id
-    console.log(`A row has been inserted with rowid ${this.lastID}`);
-});
-
-// close the database connection
-// db.close();
-
-//read
-let sql = `SELECT * FROM student
-           WHERE name = '이종현'`;
-
-db.all(sql, [], (err, rows) => {
-  if (err) {
-    throw err;
-  }
-  rows.forEach((row) => {
-    console.log(row);
-  });
-});
-*/
-// close the database connection
-// db.close();
