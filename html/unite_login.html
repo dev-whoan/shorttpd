@@ -4,9 +4,18 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
 <title>Shorttpd, Simple Web Server</title>
 <script src="/shorttpd-static/js/app.js"></script>
+<script src="/shorttpd-static/js/sha256.js"></script>
 <body>
 <div data-include="/shorttpd-static/header.html"></div>
-<div data-include="/shorttpd-static/404.html"></div>
+<style>
+section#login-section{
+    height: 400px;
+}
+</style>
+<section id="login-section">
+    <div data-include="/shorttpd-static/login.html"></div>
+</section>
+
 <div data-include="/shorttpd-static/footer.html"></div>
 </body>
 

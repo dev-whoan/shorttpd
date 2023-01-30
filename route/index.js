@@ -5,6 +5,8 @@ import { fileURLToPath } from 'url';
 import ShorttpdConfig from '../util/confReader.js';
 import urlencoder from 'urlencode';
 
+import { authorize } from './auth/auth.js';
+
 /** Variables
  * Router
  */
@@ -14,6 +16,7 @@ const router = express.Router();
  */
 const configReader = new ShorttpdConfig();
 const webViewExtensions = configReader.config.data.http.web_view_extension.split(',');
+const cookieName = configReader.config.data.http.web_cookie_name;
 
 /** Variables
  * File Reader
@@ -25,27 +28,61 @@ const staticHtmlPath = path.join(__dirname, '..', 'html');
 
 const staticUnitedHTML = path.join(staticHtmlPath, 'unite.html');
 const static404 = path.join(staticHtmlPath, 'unite_404.html');
+const static401 = path.join(staticHtmlPath, 'unite_401.html');
 const staticBodyHTML = path.join(staticHtmlPath, 'body.html');
 const STATIC_UNITE_HTML = Buffer.from(fs.readFileSync(staticUnitedHTML)).toString('utf-8');
 const STATIC_BODY_HTML = Buffer.from(fs.readFileSync(staticBodyHTML)).toString('utf-8');
 
-/** Router
- * Authorization
- */
-router.use('/*', (req, res, next) => {
+router.use('/*', async (req, res, next) => {
     const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
+    console.log(req.headers.cookie);
     console.log(`[[Connect - ${ip}]]:: ${req.originalUrl} ${new Date().toLocaleString()}`);
     if(configReader.config.data.auth.use_auth === 'yes'){
-        if(!req.headers.authorization){
-            console.log(`\t\tUnauthorized******`);
+        if(!req.headers.cookie){
+            /*
             return res.status(401).json({
                 code: 401,
                 message: "Unauthorized"
             })
+            */
+            return res.render(static401);
+        }
+        try{
+            const authValue = req.headers.cookie.split(`${cookieName}=`)[1];
+            if(!authValue){
+                /*
+                return res.status(401).json({
+                    code: 401,
+                    message: "Unauthorized"
+                })
+                */
+                return res.render(static401);
+            }
+            
+            const userName = authValue.split(":")[0];
+            const userPw = authValue.split(":")[1];
+    
+            const authResult = await authorize(userName, userPw);
+            if(!authResult){
+                /*
+                return res.status(401).json({
+                    code: 401,
+                    message: "Unauthorized"
+                })
+                */
+                return res.render(static401);
+            }
+        } catch (e){
+            /*
+            return res.status(401).json({
+                code: 401,
+                message: "Unauthorized"
+            })
+            */
+            return res.render(static401);
         }
         /* Add more authorization */
     }
-
     next();
 })
 

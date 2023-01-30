@@ -1,6 +1,8 @@
 # shorttpd serve
 serve/
 serve/**
+database/user.db
+
 # Logs
 .DS_Store
 logs

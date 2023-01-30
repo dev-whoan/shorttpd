@@ -1,7 +1,7 @@
 # shorttpd
 Simple Http Web Server For Serving Static Files
 
-## Latest Version: 0.0.2
+## Latest Version: 0.0.3
 
 ## Demo
 <img width="1600" alt="Demo Preview" src="https://user-images.githubusercontent.com/65178775/215252787-e6b80509-be23-4796-8cc8-f1ecdc5d9ea5.gif">
@@ -24,11 +24,11 @@ web_view_extension=txt,json,conf,ini,png,jpeg,jpg,gif
 ```
 - `addresses`: Section that set shorttpd's address info. for now, only port is available
 - `addresses.bind_port`: binding port for the container.
-- `auth`: Section that set Authentication. Currently not supported. Everyone can access your shorttpd.
+- `auth`: Section that set Authentication.
 - `auth.use_auth`: use authentication or not.
 - `http`: Section that set basic serving info
 - `http.web_view_extension`: extensions registered here will be shown on web browser as default, not downloading.
-
+- `http.web_cookie_name=SHORTTPD_COOKIE`: cookie name of using authorization feature. it is set on front-side's app.js, as`__AUTH_NAME__`. both must be match.
 - Mount your directory for serving into /app/serve.
 
-`docker run --rm -p 3080:3080 -v /shorttpd/serve:/app/serve --name shorttpd devwhoan/shorttpd:0.0.2`
+`docker run --rm -p 3080:3080 -v /shorttpd/serve:/app/serve --name shorttpd devwhoan/shorttpd:0.0.3`
