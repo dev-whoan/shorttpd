@@ -16,26 +16,32 @@ export default class DBAcceesor {
         this.db = null;
         //this.db = new sqlite.Database(dbPath);
         this.initialize();
-
+        
         DBAcceesor.instance = this;
     }
 
     initialize(){
-        this.db = new sqlite.Database(dbPath);
+        return new Promise((resolve, reject) => {
+            this.db = new sqlite.Database(dbPath);
 
-        this.db.serialize( () => {
-            let tableList = [];
-            const db = this.db;
-            db.all("select name from sqlite_master where type='table'", function(err, tables) {
-                tableList = tables.filter((table) => table.name === AUTH_TABLE_NAME);
-                if(tableList.length === 0){
-                    const stmt = db.prepare(`create table ${AUTH_TABLE_NAME} (SEQ integer primary key autoincrement, name text not null, password text not null, perm text)`);
-                    stmt.run();
-                    stmt.finalize();
-                }
-                db.close();
+            this.db.serialize( () => {
+                let tableList = [];
+                const db = this.db;
+                db.all("select name from sqlite_master where type='table'", function(err, tables) {
+                    if(err){
+                        return reject(false);
+                    }
+                    tableList = tables.filter((table) => table.name === AUTH_TABLE_NAME);
+                    if(tableList.length === 0){
+                        const stmt = db.prepare(`create table ${AUTH_TABLE_NAME} (SEQ integer primary key autoincrement, name text not null, password text not null, perm text)`);
+                        stmt.run();
+                        stmt.finalize();
+                    }
+                    db.close();
+                    return resolve(true);
+                });
             });
-        });
+        })
         
     }
 
@@ -188,26 +194,3 @@ export default class DBAcceesor {
         });
     }
 }
-
-/*
-const dba = new DBAcceesor();
-try{
-    console.log(
-        await dba.getUsers()
-    )
-    
-    await dba.addUser('hello', 'abc');
-await dba.addUser('hello1', 'abc');
-await dba.addUser('hello2', 'abc');
-await dba.addUser('hello3', 'abc');
-await dba.addUser('hello4', 'abc');
-await dba.addUser('hello5', 'abc');
-await dba.addUser('hello6', 'abc');
-await dba.addUser('hello7', 'abc');
-await dba.addUser('hello8', 'abc');
-await dba.addUser('hello9', 'abc');
-await dba.addUser('hello10', 'abc');
-await dba.addUser('hello11', 'abc');
-
-} catch (ignore) {}
-*/

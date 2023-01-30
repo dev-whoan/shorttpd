@@ -7,6 +7,7 @@ import defaultRouter from './route/index.js';
 import authRouter from './route/auth/index.js';
 import adminRouter from './route/admin/index.js';
 import ShorttpdConfig from './util/confReader.js';
+import DBAcceesor from './database/dba.js';
 
 const app = express();
 
@@ -28,7 +29,6 @@ app.use(express.json());
 app.set('view engine', 'ejs');
 app.engine('html', ejs.renderFile);
 app.use(`${adminUri}`, express.static(path.join(__dirname, 'html', 'admin')));
-console.log(adminUri);
 app.use('/img', express.static(path.join(__dirname, 'html', 'img')));
 app.use('/js', express.static(path.join(__dirname, 'html', 'js')));
 app.use('/shorttpd-static/fragment', express.static(path.join(__dirname, 'html', 'public', 'fragment')));
@@ -43,6 +43,8 @@ app.use('/login', (req, res, next) => {
 app.use('/manage', adminRouter);
 app.use('/auth', authRouter);
 app.use('/', defaultRouter);
+
+const dba = new DBAcceesor();
 
 app.all('*', (req, res) => {
     const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
