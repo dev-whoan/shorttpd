@@ -214,7 +214,7 @@ function registerUser(){
         return;
     }
 
-    const id = parent.querySelector('#id-value').value;
+    const id = parent.querySelector('#id-value');
     const pw = sha256(parent.querySelector('#pw-value').value);
     const prompt = document.getElementById('prompt');
     const promptOk = prompt.querySelector('#btn-ok');
@@ -231,7 +231,7 @@ function registerUser(){
             'POST',
             '/manage/register',
             {
-                id: id,
+                id: id.value,
                 pw: pw,
                 key: _key
             },
@@ -243,6 +243,8 @@ function registerUser(){
                 }
 
                 if(result.code === 201){
+                    id.value = '';
+                    parent.querySelector('#pw-value').value = '';
                     alert("User Created");
                     closeUserAddPopup();
 
@@ -282,7 +284,7 @@ function deleteUser(){
         return;
     }
 
-    const id = parent.querySelector('#id-remove').value;
+    const id = parent.querySelector('#id-remove');
     const prompt = document.getElementById('prompt');
     const promptOk = prompt.querySelector('#btn-ok');
     const promptNo = prompt.querySelector('#btn-no');
@@ -298,11 +300,12 @@ function deleteUser(){
             'POST',
             '/manage/unregister',
             {
-                id: id,
+                id: id.value,
                 key: _key
             },
             'Fail to get users',
             function(result){
+                id.value = '';
                 if(result.code === 409){
                     alert("User Already Exist!")
                     return;

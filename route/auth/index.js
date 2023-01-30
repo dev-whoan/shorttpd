@@ -19,9 +19,6 @@ router.use('/*', (req, res, next) => {
 router.post('/login', async (req, res, next) => {
     if(configReader.config.data.auth.use_auth === 'yes'){
         const authResult = await authorize(req.body.name, req.body.password);
-        console.log('/auth/login auth result?', authResult);
-
-
         if(authResult){
             return res.status(200).json({
                 code: 200,

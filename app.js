@@ -24,6 +24,7 @@ const staticHtmlPath = path.join(__dirname, 'html', 'public', 'view');
 const staticLogin = path.join(staticHtmlPath, 'unite_login.html');
 
 // app.use(express.static(path.join(__dirname)));
+app.enable('trust proxy');
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 app.set('view engine', 'ejs');

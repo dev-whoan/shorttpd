@@ -36,7 +36,6 @@ const STATIC_BODY_HTML = Buffer.from(fs.readFileSync(staticBodyHTML)).toString('
 
 router.use('/*', async (req, res, next) => {
     const ip = req.headers['x-forwarded-for'] ||  req.connection.remoteAddress;
-    console.log(req.headers.cookie);
     console.log(`[[Connect - ${ip}]]:: ${req.originalUrl} ${new Date().toLocaleString()}`);
     if(configReader.config.data.auth.use_auth === 'yes'){
         if(!req.headers.cookie){
