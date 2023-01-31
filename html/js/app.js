@@ -313,8 +313,9 @@ function deleteUser(){
     
                 if(result.code === 201 || result.code === 200){
                     alert("User Removed");
-                    closeUserAddPopup();
+                    closeUserRemovePopup();
                     drawUserList(_key);
+                    id.value = '';
                     return;
                 }
     
