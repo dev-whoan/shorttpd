@@ -17,7 +17,10 @@ const router = express.Router();
  */
 const configReader = new ShorttpdConfig();
 const webViewExtensions = configReader.config.data.http.web_view_extension.split(',');
+const webViewExclude = configReader.config.data.http.web_view_exclude.split(',');
 const cookieName = configReader.config.data.http.web_cookie_name;
+
+console.log(webViewExclude);
 
 /** Variables
  * File Reader
@@ -89,6 +92,9 @@ router.use('/*', async (req, res, next) => {
 
     targeturl = targeturl.split(/\ /).join('\ ');
 
+    if(webViewExclude.indexOf(path.basename(targeturl)) !== -1){
+        return res.render(static404);
+    }
     const extOfFile = path.extname(targeturl);
     const targetPath = req.originalUrl !== '/' ? path.join(currentPath, targeturl) : currentPath;
     const requestPath = targetPath;
@@ -106,6 +112,9 @@ router.use('/*', async (req, res, next) => {
                 const files = [];
                 
                 read.forEach((file, index) => {
+                    if(webViewExclude.indexOf(file.name) !== -1){
+                        return false;
+                    }
                     const fDir = file.isDirectory();
                     const fName = file.name;
                     const fPath = path.join(requestPath, fName);
