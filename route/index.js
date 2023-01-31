@@ -16,9 +16,9 @@ const router = express.Router();
  * Config Reader
  */
 const configReader = new ShorttpdConfig();
-const webViewExtensions = configReader.config.data.http.web_view_extension.split(',');
-const webViewExclude = configReader.config.data.http.web_view_exclude.split(',');
-const cookieName = configReader.config.data.http.web_cookie_name;
+const webViewExtensions = configReader.config.data.http.web_view_extension ? configReader.config.data.http.web_view_extension.split(',') : [];
+const webViewExclude = configReader.config.data.http.web_view_exclude ? configReader.config.data.http.web_view_exclude.split(',') : [];
+const cookieName = configReader.config.data.http.web_cookie_name ? configReader.config.data.http.web_cookie_name : "SHORTTPD_COOKIE_NAME";
 
 console.log(webViewExclude);
 
