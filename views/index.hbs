@@ -1,0 +1,70 @@
+<html>
+  <link
+    rel='stylesheet'
+    href='https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css'
+  />
+  <link rel='stylesheet' href='/css/header.css' />
+  <link rel='stylesheet' href='/css/body.css' />
+  <link rel='stylesheet' href='/css/footer.css' />
+  <title>Shorttpd, Simple Web Server</title>
+  <script src='/js/app.js'></script>
+  <body>
+    <header>
+      <h1 onclick="location.href = '/';">Shorttpd, Simple Web Server Serving
+        Static Files</h1>
+      <span id='logout' onclick='logout()'>Logout</span>
+    </header>
+
+    <section id='serve'>
+      <p id='current-location'>/</p>
+      <div id='serve-title-wrapper'>
+        <p id='file-type-blank'></p>
+        <p id='file-name-label'>File Name</p>
+        <p id='file-size-label'>File Size (Byte)</p>
+        <p id='file-modified-label'>Last Modified</p>
+      </div>
+      <br />
+      <div class='one-file'>
+        <img class='file-type-icon' src='/img/dir.png' />
+        <p class='file-name'>..</p>
+        <p class='file-size'></p>
+        <p class='file-modified'></p>
+      </div>
+
+      {{!-- {{#data.file_list}} --}}
+      {{#file_list}}
+        <div class='one-file'>
+          {{#if this.dir}}
+            <img class='file-type-icon' src='/img/dir.png' />
+          {{else}}
+            <img class='file-type-icon' src='/img/file.png' />
+          {{/if}}
+
+          <p class='file-name' data-isdir='{{this.dir}}'>{{this.name}}</p>
+          <p class='file-size'>{{this.size}}</p>
+          {{#if this.lastModified}}
+            <p class='file-modified'>{{this.lastModified}}</p>
+          {{else}}
+            <p class='file-modified'></p>
+          {{/if}}
+        </div>
+      {{/file_list}}
+      {{!-- {{/data.file_list}} --}}
+
+    </section>
+
+    <footer>
+      <div id='developer'>
+        <a href='https://github.com/dev-whoan/shorttpd'><img
+            id='github'
+            src='/img/github.png'
+          /></a>
+        <span id='descript'>
+          Developed by
+          <a href='https://github.com/dev-whoan'>dev-whoan</a></span>
+
+      </div>
+    </footer>
+  </body>
+
+</html>

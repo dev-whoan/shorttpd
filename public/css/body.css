@@ -1,0 +1,96 @@
+section#serve {
+  width: calc(100% - 40px);
+  height: 600px;
+  overflow-y: scrol;
+  overflow-x: hidden;
+  position: relative;
+
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+section#serve #current-location {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+section#serve .one-file {
+  width: 100%;
+  height: auto;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  overflow: hidden;
+
+  border-bottom: 1px solid black;
+
+  display: flex;
+  justify-content: start;
+}
+
+section#serve .one-file .file-type-icon {
+  width: 22px;
+  height: 22px;
+}
+
+section#serve .one-file p {
+  height: 22px;
+  line-height: 22px;
+  margin-left: 10px;
+}
+
+section#serve .one-file .file-name {
+  width: calc(50% - 22px);
+  cursor: pointer;
+  color: blue;
+}
+
+section#serve .one-file .file-name:hover {
+  color: purple;
+}
+
+section#serve .one-file .file-size {
+  width: 20%;
+}
+
+section#serve .one-file .file-modified {
+  width: 30%;
+}
+
+section#serve #serve-title-wrapper {
+  width: 100%;
+  height: auto;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  overflow: hidden;
+
+  border-bottom: 1px solid black;
+
+  display: flex;
+  justify-content: start;
+}
+
+section#serve #serve-title-wrapper p {
+  height: 22px;
+  line-height: 22px;
+  margin-left: 10px;
+  font-weight: 700;
+}
+
+section#serve #serve-title-wrapper #file-type-blank {
+  width: 22px;
+  margin-left: 0 !important;
+}
+
+section#serve #serve-title-wrapper #file-name-label {
+  width: calc(50% - 22px);
+}
+
+section#serve #serve-title-wrapper #file-size-label {
+  width: 20%;
+}
+
+section#serve #serve-title-wrapper #file-modified-label {
+  width: 30%;
+}
