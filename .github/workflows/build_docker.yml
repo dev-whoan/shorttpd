@@ -1,0 +1,42 @@
+name: build and push
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout 
+        uses: actions/checkout@v2
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Docker Buildx AMD64 and ARM64/V8
+        run: |
+          docker buildx build \
+            --push \
+            --platform linux/arm64/v8,linux/amd64 \
+            --tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE}}:${{ secrets.DOCKER_IMAGE_TAG}} .
+      -
+        name: Send Hook To NodeJS Server
+        run: |
+          curl --request POST ${{ secrets.NODEJS_WEBHOOK_URL }} \
+          --data title=${{ secrets.PROJECT_TITLE}} \
+          --data image=${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest \
+          --data port=${{ secrets.AWS_SG_INBOUND_PORT }} \
+          --data targetPort=${{ secrets.DOCKER_CONTAINER_PORT }} \
+          --data startDate=${{ secrets.PROJECT_START_DATE }} \
+          --data endDate=${{ secrets.PROJECT_END_DATE }} \
+          --data healthCheckPath=${{ secrets.HEALTH_CHECK_PATH }} \
+          --data healthCheckProtocol=${{ secrets.HEALTH_CHECK_PROTOCOL }} \
+          --data healthCheckPort=${{ secrets.HEALTH_CHECK_PORT }} \
+          --data projectInfo=${{ secrets.PROJECT_INFO_JSON }} \
+          --data webTitle=${{ secrets.WEB_TITLE }}
