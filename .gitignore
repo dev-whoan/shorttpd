@@ -6,6 +6,9 @@ package-lock.json
 /dist
 /node_modules
 
+#SQLite
+shorttpd_db
+
 # Logs
 logs
 *.log
