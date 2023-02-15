@@ -11,7 +11,7 @@ COPY . .
 RUN rm package-lock.json && rm -f node_modules
 RUN npm i
 RUN npm ci --only=production
-RUN npm build
+RUN npm run build
 
 COPY . /app
 
