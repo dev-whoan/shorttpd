@@ -1,5 +1,9 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { UserLoginDTO } from '../data/dto/user.login.dto';
 import { UsersRepository } from '../data/user.repository';
 import { UserEntity } from '../data/user.schema';
@@ -49,12 +53,13 @@ export class UsersService {
     );
 
     if (!user) {
-      throw new HttpException('이메일과 비밀번호를 확인해주세요.', 401);
+      throw new BadRequestException('이메일과 비밀번호를 확인해주세요.');
     }
 
     if (!(await bcrypt.compare(userLoginDTO.password, user.password))) {
-      throw new HttpException('이메일과 비밀번호를 확인해주세요.', 401);
+      throw new BadRequestException('이메일과 비밀번호를 확인해주세요.');
     }
+
     try {
       const jwt = await this.jwtService.signAsync(
         { sub: user.username },

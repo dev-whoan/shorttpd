@@ -1,3 +1,4 @@
+import { jwtExtractorFromCookies } from './../../common/utils/jwtExtractorFromCookies';
 import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { FilesService } from '../service/files.service';
@@ -22,6 +23,7 @@ export class FilesController {
       return res.download(files);
     }
 
-    return res.render('index', { file_list: files });
+    const jwt = jwtExtractorFromCookies(req);
+    return res.render('index', { file_list: files, logined: !!jwt });
   }
 }

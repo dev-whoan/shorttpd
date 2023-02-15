@@ -1,0 +1,62 @@
+section#login-section {
+  height: 400px;
+}
+
+div#user-login {
+  width: 300px;
+  height: 200px;
+  position: absolute;
+  left: 50%;
+  top: 130px;
+  box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+  transform: translateX(-50%);
+}
+
+div#user-login #id-label {
+  width: calc(100% - 58px);
+  padding: 5px;
+  margin: 0;
+  margin-top: 15px;
+  margin-left: 48px;
+}
+
+div#user-login #pw-label {
+  width: calc(100% - 58px);
+  padding: 5px;
+  margin: 0;
+  margin-top: 10px;
+  margin-left: 48px;
+}
+
+div#user-login #id-value,
+div#user-login #pw-value {
+  margin-left: 52px;
+}
+
+div#user-login div#btn-wrapper {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: space-evenly;
+  height: 50px;
+  margin-top: 15px;
+}
+
+div#user-login div#btn-wrapper .button {
+  width: 70px;
+  height: 40px;
+  line-height: 40px;
+
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+  cursor: pointer;
+}
+
+#btn-login {
+  background-color: #b7fcd2;
+}

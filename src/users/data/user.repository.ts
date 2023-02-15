@@ -31,7 +31,7 @@ export class UsersRepository {
 
       return user;
     } catch (error) {
-      throw new BadRequestException('유저를 찾을 수 없습니다.');
+      throw new BadRequestException('이메일과 비밀번호를 확인해주세요.');
     }
   }
 

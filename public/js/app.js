@@ -48,3 +48,38 @@ function addFileClickHandler() {
     });
   }
 }
+
+function goLogin() {
+  const loginForm = document.getElementById('user-login');
+  if (!loginForm) {
+    return;
+  }
+
+  const idValue = loginForm.querySelector('input#id-value').value;
+  const hash = sha256(loginForm.querySelector('input#pw-value').value);
+
+  httpRequest(
+    'POST',
+    '/users/login',
+    {
+      username: idValue,
+      password: hash,
+    },
+    'Fail to login',
+    function (result) {
+      console.log(result);
+      if (result.success) {
+        location.href = '/';
+        return;
+      }
+
+      alert(result.message);
+    },
+  );
+}
+
+function logout() {
+  httpRequest('POST', '/users/logout', {}, 'Fail to logout', function (result) {
+    location.reload();
+  });
+}

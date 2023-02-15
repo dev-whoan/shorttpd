@@ -13,7 +13,9 @@
     <header>
       <h1 onclick="location.href = '/';">Shorttpd, Simple Web Server Serving
         Static Files</h1>
-      <span id='logout' onclick='logout()'>Logout</span>
+      {{#if logined}}
+        <span id='logout' onclick='logout()'>Logout</span>
+      {{/if}}
     </header>
 
     <section id='serve'>

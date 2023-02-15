@@ -1,5 +1,6 @@
+import { SelectableJwtAuthGuard } from './auth/jwt/auth.guard';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as expressBasicAuth from 'express-basic-auth';
 import * as passport from 'passport';
@@ -8,7 +9,6 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filter/http/http-exception.filter';
 import { SuccessInterceptor } from './common/interceptor/success/success.interceptor';
-import { exit } from 'process';
 
 class Application {
   private logger = new Logger('Shorttpd');
@@ -17,6 +17,8 @@ class Application {
   private corsOriginList: string[];
   private ADMIN_USER: string;
   private ADMIN_PASSWORD: string;
+  private USE_AUTH: string;
+
   constructor(private server: NestExpressApplication) {
     this.server = server;
 
@@ -36,6 +38,7 @@ class Application {
       : ['*'];
     this.ADMIN_USER = process.env.ADMIN_USERNAME || 'shorttpd';
     this.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'shorttpd_password';
+    this.USE_AUTH = process.env.USE_AUTH || 'no';
   }
 
   private setUpBasicAuth() {
@@ -72,7 +75,12 @@ class Application {
 
     this.logger.log('Setting Logger Middleware...');
 
+    //* Set Global Guard
+    if (this.USE_AUTH === 'yes')
+      this.server.useGlobalGuards(new SelectableJwtAuthGuard(new Reflector()));
+
     this.logger.log('Setting Global Interceptors...');
+
     this.server.useGlobalInterceptors(new SuccessInterceptor());
     this.logger.log('✅ SuccessInterceptor Ok');
 

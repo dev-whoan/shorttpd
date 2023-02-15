@@ -17,21 +17,25 @@ export class HttpExceptionFilter implements ExceptionFilter {
       | string
       | { error: string; statusCode: number; message: string | string[] };
 
-    if (typeof error === 'string') {
-      response.status(status).json({
-        success: false,
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        path: request.url,
-        message: error,
-      });
+    if (status === 401) {
+      response.redirect('/users/login');
     } else {
-      response.status(status).json({
-        success: false,
-        statusCode: status,
-        timestamp: new Date().toISOString(),
-        ...error,
-      });
+      if (typeof error === 'string') {
+        response.status(status).json({
+          success: false,
+          statusCode: status,
+          timestamp: new Date().toISOString(),
+          path: request.url,
+          message: error,
+        });
+      } else {
+        response.status(status).json({
+          success: false,
+          statusCode: status,
+          timestamp: new Date().toISOString(),
+          ...error,
+        });
+      }
     }
   }
 }
