@@ -2,16 +2,18 @@
 
 ```env
 PORT=3000
+SHARE_PREFIX_URI=share
 
 # Use Should Login to Use Shorttpd
-use_auth=no
+USE_AUTH=no
+JWT_SECRET=__jwt_secret__
 
 # Admin Setting
-admin_page_prefix=/admin
-admin_username=admin
-admin_password=admin
+ADMIN_PAGE_PREFIX=/admin
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin
 
 # Web View Setting
-web_view_extension=txt,json,conf,ini,png,jpeg,jpg,gif
-web_view_exclude=@eaDir
+WEB_VIEW_EXTENSION=json,conf,ini,png,jpeg,jpg,gif
+WEB_VIEW_EXCLUDE=@eaDir
 ```

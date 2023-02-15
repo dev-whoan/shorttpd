@@ -1,0 +1,62 @@
+div#user-add-popup,
+div#user-remove-popup {
+  width: 300px;
+  height: 200px;
+  position: absolute;
+  left: 50%;
+  top: 130px;
+  box-shadow: rgb(0 0 0 / 24%) 0px 3px 8px;
+  transform: translateX(-50%);
+  background-color: white;
+  display: none;
+}
+
+div#user-add-popup #id-label,
+div#user-remove-popup #id-label {
+  width: calc(100% - 58px);
+  padding: 5px;
+  margin: 0;
+  margin-top: 3px;
+  margin-left: 48px;
+}
+
+div#user-add-popup #pw-label {
+  width: calc(100% - 58px);
+  padding: 5px;
+  margin: 0;
+  margin-left: 48px;
+}
+
+div#user-add-popup #id-value,
+div#user-add-popup #pw-value,
+div#user-remove-popup #id-remove {
+  margin-left: 52px;
+}
+
+div.btn-wrapper {
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: space-evenly;
+  height: 50px;
+  margin-top: 15px;
+}
+
+div.btn-wrapper .button {
+  width: 70px;
+  height: 40px;
+  line-height: 40px;
+
+  margin-top: 5px;
+  margin-bottom: 5px;
+
+  text-align: center;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+  cursor: pointer;
+}
+
+#btn-login {
+  background-color: #b7fcd2;
+}

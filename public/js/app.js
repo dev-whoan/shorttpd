@@ -45,50 +45,6 @@ function addFileClickHandler() {
         uri = uri.substring(0, uri.length - 1);
       }
       location.href = uri;
-
-      /*
-      if (isDir === true) {
-        console.log('Is Dir. Directing..');
-        location.href = uri;
-        return;
-      }
-
-      console.log('Is File. Fetching');
-
-      uri = pathName !== '/' ? pathName + '/' + fileName : '/' + fileName;
-      httpRequest(
-        'POST',
-        '/render',
-        {
-          file: uri,
-        },
-        'Fail to get file',
-        () => {
-          ///* 
-        },
-      );
-      */
     });
-  }
-}
-
-//*
-function httpRequest(method, uri, body, errorMsg, callback) {
-  const url = uri.includes('http') ? uri : `${uri}`;
-
-  var http = new XMLHttpRequest();
-  http.open(method, url, true);
-  http.setRequestHeader('Content-type', 'application/json');
-  http.addEventListener('readystatechange', processRequest, false);
-  http.send(JSON.stringify(body));
-
-  function processRequest() {
-    if (http.readyState == 4) {
-      try {
-        callback(JSON.parse(http.responseText));
-      } catch (e) {
-        callback(e);
-      }
-    }
   }
 }

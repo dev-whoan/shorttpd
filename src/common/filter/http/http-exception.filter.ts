@@ -19,6 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     if (typeof error === 'string') {
       response.status(status).json({
+        success: false,
         statusCode: status,
         timestamp: new Date().toISOString(),
         path: request.url,
@@ -26,6 +27,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       });
     } else {
       response.status(status).json({
+        success: false,
         statusCode: status,
         timestamp: new Date().toISOString(),
         ...error,
