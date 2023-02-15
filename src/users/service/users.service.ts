@@ -23,6 +23,10 @@ export class UsersService {
     return await this.userRepository.findByUsername(username);
   }
 
+  async listAllUsers(): Promise<UserDTO[]> {
+    return await this.userRepository.getAllUser();
+  }
+
   async signUp(userRegisterDTO: UserRegisterDTO): Promise<void> {
     return await this.userRepository.createUser(userRegisterDTO);
   }

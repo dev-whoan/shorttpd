@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './common/logger/logger.middleware';
 import { UserEntity } from './users/data/user.schema';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserEntity } from './users/data/user.schema';
       entities: [UserEntity],
       synchronize: true,
     }),
+    AdminModule,
     UsersModule,
     FilesModule,
     AuthModule,

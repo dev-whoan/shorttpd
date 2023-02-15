@@ -8,6 +8,7 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filter/http/http-exception.filter';
 import { SuccessInterceptor } from './common/interceptor/success/success.interceptor';
+import { exit } from 'process';
 
 class Application {
   private logger = new Logger('Shorttpd');
@@ -19,19 +20,27 @@ class Application {
   constructor(private server: NestExpressApplication) {
     this.server = server;
 
+    if (
+      process.env.ADMIN_PAGE_PREFIX &&
+      (process.env.ADMIN_PAGE_PREFIX === '' ||
+        process.env.ADMIN_PAGE_PREFIX === '/')
+    ) {
+      this.logger.error('Set "ADMIN_PAGE_PREFIX" not to be empty and [/]');
+      throw new Error('🆘 Set "ADMIN_PAGE_PREFIX" not to be empty and [/]');
+    }
     if (!process.env.JWT_SECRET) this.logger.error('Set "JWT_SECRET" env');
     this.DEV_MODE = process.env.NODE_ENV === 'production' ? false : true;
     this.PORT = process.env.PORT || '5000';
     this.corsOriginList = process.env.CORS_ORIGIN_LIST
       ? process.env.CORS_ORIGIN_LIST.split(',').map((origin) => origin.trim())
       : ['*'];
-    this.ADMIN_USER = process.env.ADMIN_USER || 'shorttpd';
+    this.ADMIN_USER = process.env.ADMIN_USERNAME || 'shorttpd';
     this.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'shorttpd_password';
   }
 
   private setUpBasicAuth() {
     this.server.use(
-      ['/docs', '/docs-json'],
+      [process.env.ADMIN_PAGE_PREFIX],
       expressBasicAuth({
         challenge: true,
         users: {

@@ -5,6 +5,7 @@ import { UserRegisterDTO } from './dto/user.register.dto';
 import { UserEntity } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import { UserLoginDTO } from './dto/user.login.dto';
+import { UserDTO } from './dto/user.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -13,7 +14,7 @@ export class UsersRepository {
     private readonly userModel: Repository<UserEntity>,
   ) {}
 
-  async getAllUser(): Promise<UserEntity[]> {
+  async getAllUser(): Promise<UserDTO[]> {
     try {
       const user = await this.userModel.find();
       if (!user) throw new Error();
