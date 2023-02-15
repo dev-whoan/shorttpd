@@ -8,13 +8,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN rm package-lock.json && rm -f node_modules
+RUN rm package-lock.json && rm -f node_modules && rm shorttpd_db
 RUN npm i
-
 RUN npm ci --only=production
+RUN npm build
 
 COPY . /app
-
-RUN ls /app
 
 CMD [ "npm", "run", "start:prod" ]
