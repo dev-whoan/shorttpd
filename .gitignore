@@ -11,6 +11,9 @@ package-lock.json
 ./shorttpd_db
 shorttpd_db
 
+# serve directory
+/serve
+
 # Logs
 logs
 *.log
