@@ -15,7 +15,7 @@ import { AdminModule } from './admin/admin.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'sqlite',
-      database: 'shorttpd',
+      database: 'shorttpd_db',
       entities: [UserEntity],
       synchronize: true,
     }),
