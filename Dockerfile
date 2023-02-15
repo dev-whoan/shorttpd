@@ -64,6 +64,8 @@ WORKDIR /shorttpd
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules /shorttpd/node_modules
 COPY --chown=node:node --from=build /app/dist /shorttpd/dist
+COPY --chown=node:node --from=build /app/views /shorttpd/views
+COPY --chown=node:node --from=build /app/public /shorttpd/public
 
 # Start the server using the production build
 CMD [ "node", "/shorttpd/dist/main.js" ]
