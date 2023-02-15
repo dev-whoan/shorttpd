@@ -59,9 +59,11 @@ USER node
 
 FROM node:16-alpine As production
 
+WORKDIR /shorttpd
+
 # Copy the bundled code from the build stage to the production image
-COPY --chown=node:node --from=build /app/node_modules ./node_modules
-COPY --chown=node:node --from=build /app/dist ./dist
+COPY --chown=node:node --from=build /app/node_modules /shorttpd/node_modules
+COPY --chown=node:node --from=build /app/dist /shorttpd/dist
 
 # Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+CMD [ "node", "/shorttpd/dist/main.js" ]
