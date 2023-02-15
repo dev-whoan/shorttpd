@@ -1,12 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export const directoryReader = (requestPath: string) => {
+export const directoryReader = (requestPath: string, excludes: string[]) => {
   const read = fs.readdirSync(requestPath, { withFileTypes: true });
   const dirs = [];
   const files = [];
 
   read.forEach((file, index) => {
+    if (excludes.indexOf(file.name) !== -1) {
+      return false;
+    }
+
     const fDir = file.isDirectory();
     const fName = file.name;
     const fPath = path.join(requestPath, fName);

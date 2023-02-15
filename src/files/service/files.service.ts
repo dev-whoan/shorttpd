@@ -12,7 +12,7 @@ export class FilesService {
     const currentPath = path.join(process.env.PWD, 'serve');
     const webViewExclude = process.env.WEB_VIEW_EXCLUDE
       ? process.env.WEB_VIEW_EXCLUDE.split(',')
-      : '';
+      : [];
     let targeturl = decodeURI(uri);
 
     // 디코딩 후, 기존과 다르면 encode 된 것임
@@ -30,7 +30,13 @@ export class FilesService {
     try {
       const isDir = fs.lstatSync(requestPath).isDirectory();
       if (isDir) {
-        return directoryReader(requestPath);
+        return directoryReader(requestPath, excludes);
+      }
+
+      const filename = path.basename(requestPath);
+
+      if (webViewExclude.indexOf(filename) !== -1) {
+        throw new HttpException('No Such File', 404);
       }
 
       return requestPath;
@@ -48,7 +54,7 @@ export class FilesService {
   isFileShouldShownInWeb(file: string): boolean {
     const webViewExtensions = process.env.WEB_VIEW_EXTENSION
       ? process.env.WEB_VIEW_EXTENSION.split(',')
-      : '';
+      : [];
     return webViewExtensions.indexOf(path.extname(file).split('.')[1]) !== -1;
   }
 }
