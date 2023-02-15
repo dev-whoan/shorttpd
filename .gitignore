@@ -8,7 +8,7 @@ package-lock.json
 
 #SQLite
 **/shorttpd_db
-shorttpd_db
+./shorttpd_db
 
 # Logs
 logs
