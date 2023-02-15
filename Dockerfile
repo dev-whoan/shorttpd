@@ -15,4 +15,4 @@ RUN npm ci --only=production
 
 COPY . /app
 
-CMD [ "npm", "run start:prod" ]
+CMD [ "npm", "run", "start:prod" ]
