@@ -30,7 +30,7 @@ export class FilesService {
     try {
       const isDir = fs.lstatSync(requestPath).isDirectory();
       if (isDir) {
-        return directoryReader(requestPath, excludes);
+        return directoryReader(requestPath, webViewExclude);
       }
 
       const filename = path.basename(requestPath);
