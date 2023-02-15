@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN rm package-lock.json && rm -f node_modules && rm shorttpd_db
+RUN rm package-lock.json && rm -f node_modules
 RUN npm i
 RUN npm ci --only=production
 RUN npm build
