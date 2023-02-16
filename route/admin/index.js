@@ -11,7 +11,8 @@ router.use('/*', (req, res, next) => {
     console.log(`[[Connect Admin - ${ip}]]:: ${req.originalUrl} ${new Date().toLocaleString()}`);
 
     next();
-})
+});
+
 /** Router
  * Admin Page
  */
