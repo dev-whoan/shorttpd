@@ -1,23 +1,71 @@
 import { jwtExtractorFromCookies } from './../../common/utils/jwtExtractorFromCookies';
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Put,
+  Req,
+  Res,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
 import { FilesService } from '../service/files.service';
-// @Controller(process.env.SHARE_PREFIX_URI)
+import { PermissionGuard } from 'src/common/guard/permission.guard';
+
 @Controller()
 export class FilesController {
   constructor(private readonly fileService: FilesService) {}
 
   @Get('favicon.ico')
-  favicon() {
+  favicon(): void {
     return;
+  }
+
+  @UseGuards(PermissionGuard)
+  @Put('*')
+  mkdir(@Req() req: Request, @Res() res: Response) {
+    this.fileService.mkdir(req.path);
+    return res.json({ success: true });
+  }
+
+  @UseGuards(PermissionGuard)
+  @Delete('*')
+  rmdir(@Req() req: Request, @Res() res: Response) {
+    this.fileService.rmdir(req.path);
+    return res.json({ success: true });
+  }
+
+  @UseGuards(PermissionGuard)
+  @Post('*')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: undefined,
+      limits: {
+        fileSize:
+          parseInt(process.env.UPLOAD_MAX_SIZE_MB ?? '512', 10) * 1024 * 1024,
+      },
+    }),
+  )
+  uploadFile(
+    @Req() req: Request,
+    @Res() res: Response,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    this.fileService.uploadFile(req.path, file);
+    return res.json({ success: true });
   }
 
   @Get('*')
   async getFiles(@Req() req: Request, @Res() res: Response) {
     const uri = req.originalUrl;
-    const files = await this.fileService.listFiles(uri);
+    const files = this.fileService.listFiles(uri);
+
     if (typeof files === 'string') {
-      if (this.fileService.isFileShouldShownInWeb(files)) {
+      if (this.fileService.shouldShowInBrowser(files)) {
         return res.sendFile(files);
       }
       return res.download(files);

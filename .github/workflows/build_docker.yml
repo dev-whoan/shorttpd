@@ -1,42 +1,110 @@
 name: build and push
+
 on:
-  push:
-    branches: [ main ]
+  release:
+    types: [ published ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  build:
+  extract_release_tag:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.extract_info.outputs.version }}
+      date: ${{ steps.extract_info.outputs.date }}
     steps:
-      -
-        name: Checkout 
-        uses: actions/checkout@v2
-      -
-        name: Login to Docker Hub
-        uses: docker/login-action@v1
+      - name: Extract Release Information
+        id: extract_info
+        run: |
+          TAG_NAME=${GITHUB_REF#refs/tags/}
+          # Syntax Versioning: v1.2.3
+          IFS='-' read -r VERSION <<< "$TAG_NAME"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+          echo "Build will be triggered for application of production for version: $VERSION"
+
+      - name: Display metadata
+        run: |
+          echo "version: ${{ steps.extract_info.outputs.version }}"
+          echo "date: ${{ steps.extract_info.outputs.date }}"
+
+  build-amd64:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_TOKEN }}
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Docker Buildx AMD64 and ARM64/V8
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push AMD64 image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          provenance: false
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}-amd64
+
+  build-arm64:
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and push ARM64 image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/arm64
+          push: true
+          provenance: false
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}-arm64
+
+  merge:
+    runs-on: ubuntu-24.04
+    needs: [ build-amd64, build-arm64 ]
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create and push multi-arch manifest
         run: |
-          docker buildx build \
-            --push \
-            --platform linux/arm64/v8,linux/amd64 \
-            --tag ${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE}}:${{ secrets.DOCKER_IMAGE_TAG}} .
-      -
-        name: Send Hook To NodeJS Server
-        run: |
-          curl --request POST ${{ secrets.NODEJS_WEBHOOK_URL }} \
-          --data title=${{ secrets.PROJECT_TITLE}} \
-          --data image=${{ secrets.DOCKER_HUB_USERNAME }}/${{ secrets.DOCKER_IMAGE }}:latest \
-          --data port=${{ secrets.AWS_SG_INBOUND_PORT }} \
-          --data targetPort=${{ secrets.DOCKER_CONTAINER_PORT }} \
-          --data startDate=${{ secrets.PROJECT_START_DATE }} \
-          --data endDate=${{ secrets.PROJECT_END_DATE }} \
-          --data healthCheckPath=${{ secrets.HEALTH_CHECK_PATH }} \
-          --data healthCheckProtocol=${{ secrets.HEALTH_CHECK_PROTOCOL }} \
-          --data healthCheckPort=${{ secrets.HEALTH_CHECK_PORT }} \
-          --data projectInfo=${{ secrets.PROJECT_INFO_JSON }} \
-          --data webTitle=${{ secrets.WEB_TITLE }}
+          docker manifest create \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}-amd64 \
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.release.tag_name }}-arm64
+
+          docker manifest push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
