@@ -1,14 +1,14 @@
-FROM node:16-alpine
+FROM node:22-alpine
 LABEL email="dev.whoan@gmail.com"
 LABEL name="Eugene Minwhoan Kim"
-LABEL version="0.0.4"
+LABEL version="0.0.5"
 LABEL description="Shorttpd:: Simple Http Web Server That Serving Static Files"
 
 ###################
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:16-alpine As development
+FROM node:22-alpine As development
 
 # Create app directory
 WORKDIR /app
@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --chown=node:node package*.json ./
 
 # Install app dependencies using the `npm ci` command instead of `npm install`
-RUN npm ci
+RUN yarn install
 
 # Bundle app source
 COPY --chown=node:node . .
@@ -31,7 +31,10 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:16-alpine As build
+FROM node:22-alpine As build
+
+# Set NODE_ENV environment variable
+ENV NODE_ENV production
 
 WORKDIR /app
 
@@ -43,13 +46,7 @@ COPY --chown=node:node --from=development /app/node_modules ./node_modules
 COPY --chown=node:node . .
 
 # Run the build command which creates the production bundle
-RUN npm run build
-
-# Set NODE_ENV environment variable
-ENV NODE_ENV production
-
-# Running `npm ci` removes the existing node_modules directory and passing in --only=production ensures that only the production dependencies are installed. This ensures that the node_modules directory is as optimized as possible
-RUN npm ci --only=production && npm cache clean --force
+RUN yarn run build
 
 USER node
 
@@ -57,7 +54,7 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:16-alpine As production
+FROM node:22-alpine As production
 
 WORKDIR /shorttpd
 

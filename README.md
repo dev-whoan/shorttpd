@@ -34,17 +34,20 @@ yarn build
 yarn start:prod
 ```
 
+- 프로젝트 루트에 `serve/` 폴더를 생성하고, 이곳에 파일을 두면 브라우저에서 탐색할 수 있습니다.
+
 ### Docker
 
 ```bash
 docker run --rm \
   -p 5050:5050 \
   -v /path/to/.env:/shorttpd/.env \
-  -v /path/to/files:/shorttpd/serve \
+  -v /path/to/serve:/shorttpd/serve \
   --name shorttpd \
   ghcr.io/dev-whoan/shorttpd:0.0.5
 ```
-
+  - `.env` 파일을 마운트 하지 않고, 환경변수로 등록해도 됩니다.
+  - `-v /path/to/serve:/shorttpd/serve` 옵션으로 파일을 서빙할 디렉토리를 지정할 수 있습니다.
 ---
 
 ## Configuration
