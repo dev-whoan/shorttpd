@@ -1,62 +1,124 @@
 # shorttpd
 
-Simple Http Web Server For Serving Static Files
+Simple HTTP web server for serving static files, built with NestJS.
 
-## Latest Version: 0.0.4
+## Features
 
-## Demo
+- Web browser-based file explorer
+- File upload / folder creation / deletion
+- Optional JWT-based authentication
+- Per-user, per-path permission control (`r` / `rw` / `rwd`)
+- Admin panel for user management (Basic Auth protected)
+- Docker support
 
-<img width="1600" alt="Demo Preview" src="https://user-images.githubusercontent.com/65178775/215252787-e6b80509-be23-4796-8cc8-f1ecdc5d9ea5.gif">
+---
 
-# Usage
+## Installation
 
-## Customize HTML
+### Prerequisites
 
-- You can Customize Shorttpd's Design
-- You can change the html under `/views/*{.hbs}` and `/public/css/*.css`.
+- Node.js 22+
+- Yarn
 
-## Authorization
+### Local
 
-- If you want to use auth feature, please set `USE_AUTH=yes` on .env
-- Please set `ADMIN_USERNAME` and `ADMIN_PASSWORD` to use admin page. Admin page let you register users and managing them.
-- Please set `ADMIN_PAGE_PREFIX` for connecting your admin page. URI to connect to the admin page will be `/{ADMIN_PAGE_PREFIX}`.
-- After you added the user, you can login with the user for static web server of files whatever.
+```bash
+# Install dependencies
+yarn install
 
-## From 0.0.4, uses .env file not shorttpd.conf
+# Development
+yarn start:dev
 
-- It is because that the project uses `NestJS` from version 0.0.4, not just `ExpressJS` (version until 0.0.3).
+# Production build
+yarn build
+yarn start:prod
+```
 
-## env file
+### Docker
+
+```bash
+docker run --rm \
+  -p 5050:5050 \
+  -v /path/to/.env:/shorttpd/.env \
+  -v /path/to/files:/shorttpd/serve \
+  --name shorttpd \
+  ghcr.io/dev-whoan/shorttpd:0.0.5
+```
+
+---
+
+## Configuration
+
+`.env` 파일을 프로젝트 루트(또는 Docker의 경우 `/shorttpd/.env`)에 생성합니다.
 
 ```env
-PORT=3080
+PORT=5050
 
-# Use Should Login to Use Shorttpd
+# JWT 인증 사용 여부 (yes / no)
 USE_AUTH=yes
-JWT_SECRET=__jwt_secret__
+JWT_SECRET=your_jwt_secret
 
-# Admin Setting
+# 어드민 페이지 설정
 ADMIN_PAGE_PREFIX=/admin
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin
 
-# Web View Setting
-# Extensions to view directly at Web Browser
+# 브라우저에서 직접 열기를 허용할 확장자 (쉼표 구분)
 WEB_VIEW_EXTENSION=json,conf,ini,png,jpeg,jpg,gif,txt
-# File name or Directory name not to show on shorttpd
-WEB_VIEW_EXCLUDE=@eaDir
+
+# 파일 목록에서 숨길 파일/폴더 이름 (쉼표 구분)
+WEB_VIEW_EXCLUDE=.env,node_modules,some_thing_to_exclude
 ```
 
-- If you don't prepare and don't mount `.env` file, application won't be started.
-- `.env` file will be mounted into `/shorttpd/.env`
+| 변수 | 설명 | 기본값 |
+|------|------|--------|
+| `PORT` | 서버 포트 | `5000` |
+| `USE_AUTH` | 인증 활성화 여부 | `no` |
+| `JWT_SECRET` | JWT 서명 키 | — |
+| `ADMIN_PAGE_PREFIX` | 어드민 페이지 경로 (예: `/admin`) | — |
+| `ADMIN_USERNAME` | 어드민 Basic Auth 아이디 | `shorttpd` |
+| `ADMIN_PASSWORD` | 어드민 Basic Auth 비밀번호 | `shorttpd_password` |
+| `WEB_VIEW_EXTENSION` | 브라우저 뷰어 허용 확장자 | — |
+| `WEB_VIEW_EXCLUDE` | 숨길 파일/폴더 이름 | — |
 
-## Docker
+---
 
-- Set `.env` File
-- Prepare files to share which will be mounted into `/shorttpd/serve/foo/bar`.
-- Mount prefix path: `/shorttpd/serve`
-- You can mount multiple files for example: `-v /foo:/shorttpd/serve/foo -v /bar:/shorttpd/serve/bar ...`
+## Usage
 
-### Run
+### 파일 서빙
 
-`docker run --rm -p 3080:3080 -v /shorttpd/.env:/shorttpd/.env -v /shorttpd/serve:/shorttpd/serve --name shorttpd devwhoan/shorttpd:0.0.4`
+서버 실행 후 `serve/` 폴더에 파일을 두면 브라우저에서 탐색할 수 있습니다.
+
+- Docker: `-v /host/path:/shorttpd/serve`
+- 로컬: 프로젝트 루트의 `serve/` 디렉토리
+
+### 인증
+
+`USE_AUTH=yes`로 설정하면 로그인한 사용자만 파일에 접근할 수 있습니다.
+
+### 권한 시스템
+
+유저별로 경로마다 접근 수준을 지정할 수 있습니다.
+
+| 레벨 | 읽기 | 업로드/폴더 생성 | 삭제 |
+|------|:----:|:---------------:|:----:|
+| `r`  | O    | X               | X    |
+| `rw` | O    | O               | X    |
+| `rwd`| O    | O               | O    |
+
+권한은 가장 긴 prefix 경로 기준으로 매칭되며, `*`는 기본값(fallback)으로 동작합니다.
+
+```json
+[
+  { "path": "*",       "access": "r"   },
+  { "path": "/photos", "access": "rw"  },
+  { "path": "/docs",   "access": "rwd" }
+]
+```
+
+### 어드민 페이지
+
+`ADMIN_PAGE_PREFIX`에 설정한 경로로 접속하면 Basic Auth 인증 후 사용자 관리 페이지에 접근할 수 있습니다.
+
+- 사용자 추가 / 삭제
+- 사용자별 권한 설정
