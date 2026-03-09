@@ -43,6 +43,23 @@ function addFileClickHandler() {
   }
 }
 
+function navigateToParent() {
+  const pathName = location.pathname;
+  const paths = pathName.split('/');
+  if (paths.length <= 2) {
+    location.href = location.origin;
+    return;
+  }
+  let uri = location.origin;
+  for (let j = 1; j < paths.length - 1; j++) {
+    uri += '/' + paths[j];
+  }
+  if (uri.endsWith('/')) {
+    uri = uri.slice(0, -1);
+  }
+  location.href = uri;
+}
+
 function updateUploadLabel(input) {
   const label = document.getElementById('upload-label');
   if (!label) return;
