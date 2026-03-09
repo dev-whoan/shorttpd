@@ -81,7 +81,7 @@ class Application {
 
     this.logger.log('Setting Global Interceptors...');
 
-    this.server.useGlobalInterceptors(new SuccessInterceptor());
+    this.server.useGlobalInterceptors(new SuccessInterceptor(new Reflector()));
     this.logger.log('✅ SuccessInterceptor Ok');
 
     this.logger.log('Setting Global Filters...');

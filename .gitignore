@@ -1,6 +1,8 @@
 .env
 
+# Lock files (yarn 사용)
 package-lock.json
+npm-debug.log*
 
 # compiled output
 /dist
@@ -17,7 +19,6 @@ shorttpd_db
 # Logs
 logs
 *.log
-npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*

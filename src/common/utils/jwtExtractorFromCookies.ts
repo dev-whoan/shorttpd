@@ -1,13 +1,13 @@
 import { Request } from 'express';
-import { JwtFromRequestFunction } from 'passport-jwt';
+import type { JwtFromRequestFunction } from 'passport-jwt';
 
-export const jwtExtractorFromCookies: JwtFromRequestFunction = (
-  request: Request,
-): string | null => {
+export const jwtExtractorFromCookies = (request: Request): string | null => {
   try {
-    const jwt = request.cookies['jwt'];
-    return jwt;
-  } catch (error) {
+    return request.cookies['jwt'] ?? null;
+  } catch {
     return null;
   }
 };
+
+export const jwtExtractorForPassport =
+  jwtExtractorFromCookies as unknown as JwtFromRequestFunction;
