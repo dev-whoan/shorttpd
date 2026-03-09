@@ -132,6 +132,25 @@ export class FilesService {
     this.logger.log(`Deleted directory: ${targetDir}`);
   }
 
+  deleteFile(uri: string): void {
+    const targetFile = path.join(this.serveRoot, decodeURIComponent(uri));
+
+    if (!targetFile.startsWith(this.serveRoot + path.sep)) {
+      throw new HttpException('잘못된 경로입니다.', 400);
+    }
+
+    if (!fs.existsSync(targetFile)) {
+      throw new HttpException('파일이 존재하지 않습니다.', 404);
+    }
+
+    if (fs.lstatSync(targetFile).isDirectory()) {
+      throw new HttpException('파일이 아닙니다.', 400);
+    }
+
+    fs.unlinkSync(targetFile);
+    this.logger.log(`Deleted file: ${targetFile}`);
+  }
+
   canWrite(permissionRaw: string, requestPath: string): boolean {
     return canWrite(resolveAccess(parsePermissions(permissionRaw), requestPath));
   }

@@ -231,6 +231,43 @@ describe('FilesService', () => {
     });
   });
 
+  describe('deleteFile', () => {
+    it('파일을 삭제한다', () => {
+      (mockFs.existsSync as jest.Mock).mockReturnValue(true);
+      (mockFs.lstatSync as jest.Mock).mockReturnValue({ isDirectory: () => false });
+      mockFs.unlinkSync.mockReturnValue(undefined);
+
+      service.deleteFile('/docs/report.pdf');
+
+      expect(mockFs.unlinkSync).toHaveBeenCalledWith(
+        path.join(SERVE_ROOT, '/docs/report.pdf'),
+      );
+    });
+
+    it('path traversal은 HTTP 400을 던진다', () => {
+      expect(() => service.deleteFile('/../etc/passwd')).toThrow(
+        new HttpException('잘못된 경로입니다.', 400),
+      );
+    });
+
+    it('파일이 없으면 HTTP 404를 던진다', () => {
+      (mockFs.existsSync as jest.Mock).mockReturnValue(false);
+
+      expect(() => service.deleteFile('/notfound.txt')).toThrow(
+        new HttpException('파일이 존재하지 않습니다.', 404),
+      );
+    });
+
+    it('디렉토리이면 HTTP 400을 던진다', () => {
+      (mockFs.existsSync as jest.Mock).mockReturnValue(true);
+      (mockFs.lstatSync as jest.Mock).mockReturnValue({ isDirectory: () => true });
+
+      expect(() => service.deleteFile('/somedir')).toThrow(
+        new HttpException('파일이 아닙니다.', 400),
+      );
+    });
+  });
+
   describe('canWrite', () => {
     it('rw 권한 경로에서 true를 반환한다', () => {
       const raw = JSON.stringify([{ path: '/uploads', access: 'rw' }]);

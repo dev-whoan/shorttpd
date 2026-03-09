@@ -5,6 +5,7 @@ import {
   Get,
   Post,
   Put,
+  Query,
   Req,
   Res,
   UploadedFile,
@@ -34,8 +35,16 @@ export class FilesController {
 
   @UseGuards(PermissionGuard)
   @Delete('*')
-  rmdir(@Req() req: Request, @Res() res: Response) {
-    this.fileService.rmdir(req.path);
+  rmdir(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('type') type?: string,
+  ) {
+    if (type === 'file') {
+      this.fileService.deleteFile(req.path);
+    } else {
+      this.fileService.rmdir(req.path);
+    }
     return res.json({ success: true });
   }
 
@@ -72,6 +81,20 @@ export class FilesController {
     }
 
     const jwt = jwtExtractorFromCookies(req);
-    return res.render('index', { file_list: files, logined: !!jwt });
+    const user = req.user as { permission?: string } | undefined;
+    const permissionRaw = user?.permission ?? '';
+    const requestPath = req.path;
+
+    const canUpload =
+      !!jwt && this.fileService.canWrite(permissionRaw, requestPath);
+    const canDeleteDir =
+      !!jwt && this.fileService.canDelete(permissionRaw, requestPath);
+
+    return res.render('index', {
+      file_list: files,
+      logined: !!jwt,
+      canUpload,
+      canDeleteDir,
+    });
   }
 }

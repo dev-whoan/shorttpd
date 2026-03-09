@@ -20,6 +20,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload) {
+    const adminUsername = this.configService.get<string>(
+      'ADMIN_USERNAME',
+      'shorttpd',
+    );
+
+    if (payload.sub === adminUsername) {
+      return { username: adminUsername, permission: JSON.stringify([{ path: '*', access: 'rwd' }]) };
+    }
+
     try {
       const user = await this.userService.findByUsername(payload.sub);
       if (user) {

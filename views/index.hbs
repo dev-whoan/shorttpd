@@ -151,6 +151,12 @@
                     class="w-7 h-7 flex items-center justify-center rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
                     title="Delete folder"
                   >×</button>
+                {{else}}
+                  <button
+                    onclick="deleteFile('{{this.name}}')"
+                    class="w-7 h-7 flex items-center justify-center rounded text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors text-lg leading-none"
+                    title="Delete file"
+                  >×</button>
                 {{/if}}
               {{/if}}
             </div>

@@ -156,6 +156,23 @@ function rmdir(name) {
     .catch(() => alert('폴더 삭제에 실패했습니다.'));
 }
 
+function deleteFile(name) {
+  if (!confirm(`"${name}" 파일을 삭제하시겠습니까?`)) return;
+
+  const path = location.pathname === '/' ? `/${name}` : `${location.pathname}/${name}`;
+
+  fetch(`${path}?type=file`, { method: 'DELETE' })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert(data.message ?? '파일 삭제에 실패했습니다.');
+      }
+    })
+    .catch(() => alert('파일 삭제에 실패했습니다.'));
+}
+
 function goLogin() {
   const loginForm = document.getElementById('user-login');
   if (!loginForm) return;

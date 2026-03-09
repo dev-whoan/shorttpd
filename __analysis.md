@@ -108,7 +108,8 @@
 
 #### JwtStrategy
 - 쿠키(`jwt`)에서 JWT 추출
-- `payload.sub`(username)으로 유저 조회
+- `payload.sub`이 `ADMIN_USERNAME`(env, 기본 `'shorttpd'`)이면 → DB 조회 없이 전체 권한(`rwd`) admin 객체 반환
+- 그 외: `payload.sub`(username)으로 DB에서 유저 조회
 - 유저 미존재 → UnauthorizedException
 
 #### SelectableJwtAuthGuard
@@ -162,6 +163,12 @@
 - 파일이면 → HTTP 400
 - 비어있지 않으면 → HTTP 400
 - 빈 디렉토리만 삭제 가능
+
+#### FilesService.deleteFile(uri)
+- **path traversal 차단** → HTTP 400
+- 미존재 → HTTP 404
+- 대상이 디렉토리이면 → HTTP 400 (파일만 삭제 가능)
+- 파일 삭제
 
 #### FilesService.canWrite / canDelete
 - permission JSON 문자열과 요청 경로를 받아 Permission 도메인에 위임

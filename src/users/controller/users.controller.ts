@@ -17,6 +17,13 @@ import { UserRegisterDTO } from '../data/dto/user.register.dto';
 import { UserUpdateDTO } from '../data/dto/user.update.dto';
 import { UserChangePasswordDTO } from '../data/dto/user.change-password.dto';
 import { UsersService } from '../service/users.service';
+import { parsePermissions } from 'src/common/permission/permission.types';
+
+const ACCESS_CLASS: Record<string, string> = {
+  r: 'bg-blue-100 text-blue-700',
+  rw: 'bg-green-100 text-green-700',
+  rwd: 'bg-orange-100 text-orange-700',
+};
 
 @Controller('users')
 export class UsersController {
@@ -45,6 +52,22 @@ export class UsersController {
   changePassword(@Req() req: Request, @Body() dto: UserChangePasswordDTO) {
     const user = req.user as { username: string };
     return this.userService.changePassword(user.username, dto);
+  }
+
+  @Get('profile')
+  @Render('profile')
+  async renderProfile(@Req() req: Request) {
+    const user = req.user as { username: string; permission: string };
+    const permissions = parsePermissions(user.permission).map((p) => ({
+      ...p,
+      accessClass: ACCESS_CLASS[p.access] ?? '',
+    }));
+
+    return {
+      username: user.username,
+      initial: user.username.charAt(0).toUpperCase(),
+      permissions,
+    };
   }
 
   @PublicFromJWT()

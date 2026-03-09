@@ -25,6 +25,9 @@ describe('FilesController', () => {
             uploadFile: jest.fn(),
             mkdir: jest.fn(),
             rmdir: jest.fn(),
+            deleteFile: jest.fn(),
+            canWrite: jest.fn(),
+            canDelete: jest.fn(),
           },
         },
         {
@@ -42,6 +45,10 @@ describe('FilesController', () => {
 
     controller = module.get(FilesController);
     filesService = module.get(FilesService);
+
+    // 기본값 설정
+    (filesService.canWrite as jest.Mock).mockReturnValue(false);
+    (filesService.canDelete as jest.Mock).mockReturnValue(false);
   });
 
   describe('getFiles', () => {
@@ -57,6 +64,60 @@ describe('FilesController', () => {
       expect(res.render).toHaveBeenCalledWith(
         'index',
         expect.objectContaining({ file_list: entries }),
+      );
+    });
+
+    it('로그인하지 않으면 canUpload와 canDeleteDir이 false이다', async () => {
+      filesService.listFiles.mockReturnValue([]);
+
+      const req = { originalUrl: '/', path: '/', cookies: {} } as unknown as Request;
+      const res = { render: jest.fn() } as unknown as Response;
+
+      await controller.getFiles(req, res);
+
+      expect(res.render).toHaveBeenCalledWith(
+        'index',
+        expect.objectContaining({ canUpload: false, canDeleteDir: false }),
+      );
+    });
+
+    it('rw 권한 유저는 canUpload가 true이다', async () => {
+      filesService.listFiles.mockReturnValue([]);
+      (filesService.canWrite as jest.Mock).mockReturnValue(true);
+
+      const req = {
+        originalUrl: '/',
+        path: '/',
+        cookies: { jwt: 'token' },
+        user: { permission: JSON.stringify([{ path: '*', access: 'rw' }]) },
+      } as unknown as Request;
+      const res = { render: jest.fn() } as unknown as Response;
+
+      await controller.getFiles(req, res);
+
+      expect(res.render).toHaveBeenCalledWith(
+        'index',
+        expect.objectContaining({ canUpload: true }),
+      );
+    });
+
+    it('rwd 권한 유저는 canDeleteDir이 true이다', async () => {
+      filesService.listFiles.mockReturnValue([]);
+      (filesService.canDelete as jest.Mock).mockReturnValue(true);
+
+      const req = {
+        originalUrl: '/',
+        path: '/',
+        cookies: { jwt: 'token' },
+        user: { permission: JSON.stringify([{ path: '*', access: 'rwd' }]) },
+      } as unknown as Request;
+      const res = { render: jest.fn() } as unknown as Response;
+
+      await controller.getFiles(req, res);
+
+      expect(res.render).toHaveBeenCalledWith(
+        'index',
+        expect.objectContaining({ canDeleteDir: true }),
       );
     });
 
@@ -112,13 +173,24 @@ describe('FilesController', () => {
     });
   });
 
-  describe('rmdir', () => {
-    it('디렉토리 삭제를 FilesService에 위임하고 success를 반환한다', () => {
+  describe('rmdir (?type=file)', () => {
+    it('type=file이면 파일 삭제를 FilesService에 위임하고 success를 반환한다', () => {
+      (filesService.deleteFile as jest.Mock).mockReturnValue(undefined);
+      const req = { path: '/docs/report.pdf' } as unknown as Request;
+      const res = { json: jest.fn() } as unknown as Response;
+
+      controller.rmdir(req, res, 'file');
+
+      expect(filesService.deleteFile).toHaveBeenCalledWith('/docs/report.pdf');
+      expect(res.json).toHaveBeenCalledWith({ success: true });
+    });
+
+    it('type 없으면 디렉토리 삭제를 FilesService에 위임한다', () => {
       filesService.rmdir.mockReturnValue(undefined);
       const req = { path: '/emptydir' } as unknown as Request;
       const res = { json: jest.fn() } as unknown as Response;
 
-      controller.rmdir(req, res);
+      controller.rmdir(req, res, undefined);
 
       expect(filesService.rmdir).toHaveBeenCalledWith('/emptydir');
       expect(res.json).toHaveBeenCalledWith({ success: true });
