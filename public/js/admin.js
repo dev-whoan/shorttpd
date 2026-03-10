@@ -84,10 +84,8 @@ function collectPermissions(listId = 'perm-list') {
 }
 
 function logoutAdminPage() {
-  httpRequest('GET', '/admin', null, 'Fail to logout', cb_logoutAdminPage, true);
+  location.href = ADMIN_PREFIX + '/logout';
 }
-
-function cb_logoutAdminPage() {}
 
 function registerUser() {
   const modal = document.getElementById('user-add-popup');

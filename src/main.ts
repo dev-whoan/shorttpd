@@ -2,7 +2,6 @@ import { SelectableJwtAuthGuard } from './auth/jwt/auth.guard';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory, Reflector } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as expressBasicAuth from 'express-basic-auth';
 import * as passport from 'passport';
 import * as cookieParser from 'cookie-parser';
 import { join } from 'path';
@@ -15,8 +14,6 @@ class Application {
   private DEV_MODE: boolean;
   private PORT: string;
   private corsOriginList: string[];
-  private ADMIN_USER: string;
-  private ADMIN_PASSWORD: string;
   private USE_AUTH: string;
 
   constructor(private server: NestExpressApplication) {
@@ -36,21 +33,7 @@ class Application {
     this.corsOriginList = process.env.CORS_ORIGIN_LIST
       ? process.env.CORS_ORIGIN_LIST.split(',').map((origin) => origin.trim())
       : [];
-    this.ADMIN_USER = process.env.ADMIN_USERNAME || 'shorttpd';
-    this.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'shorttpd_password';
     this.USE_AUTH = process.env.USE_AUTH || 'no';
-  }
-
-  private setUpBasicAuth() {
-    this.server.use(
-      [process.env.ADMIN_PAGE_PREFIX],
-      expressBasicAuth({
-        challenge: true,
-        users: {
-          [this.ADMIN_USER]: this.ADMIN_PASSWORD,
-        },
-      }),
-    );
   }
 
   private async setUpGlobalMiddleware() {
@@ -59,7 +42,6 @@ class Application {
       credentials: true,
     });
     this.server.use(cookieParser());
-    this.setUpBasicAuth();
     this.server.useGlobalPipes(
       new ValidationPipe({
         transform: true,
