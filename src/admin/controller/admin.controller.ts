@@ -4,7 +4,7 @@ import { Response } from 'express';
 import { AuthService } from 'src/auth/auth.service';
 import { UsersService } from 'src/users/service/users.service';
 
-@Controller('admin')
+@Controller(process.env.ADMIN_PAGE_PREFIX ?? 'admin')
 export class AdminController {
   constructor(
     private readonly userService: UsersService,

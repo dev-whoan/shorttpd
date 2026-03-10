@@ -1,4 +1,12 @@
 **/node_modules
 **/serve
+**/dist
 
 shorttpd_db
+.git
+.github
+.idea
+.env
+*.md
+coverage
+test

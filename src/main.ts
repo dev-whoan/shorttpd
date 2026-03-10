@@ -35,7 +35,7 @@ class Application {
     this.PORT = process.env.PORT || '5000';
     this.corsOriginList = process.env.CORS_ORIGIN_LIST
       ? process.env.CORS_ORIGIN_LIST.split(',').map((origin) => origin.trim())
-      : ['*'];
+      : [];
     this.ADMIN_USER = process.env.ADMIN_USERNAME || 'shorttpd';
     this.ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'shorttpd_password';
     this.USE_AUTH = process.env.USE_AUTH || 'no';
